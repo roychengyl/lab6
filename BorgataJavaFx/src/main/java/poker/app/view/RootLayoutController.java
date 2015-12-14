@@ -2,6 +2,7 @@ package poker.app.view;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import domain.GameRuleDomainModel;
@@ -68,6 +69,8 @@ public class RootLayoutController implements Initializable {
 
 	@FXML
 	private RadioMenuItem twoJoker = new RadioMenuItem();
+	
+	private Rule currentRule;
 
 	public String getRuleName()
 	{	
@@ -111,16 +114,10 @@ public class RootLayoutController implements Initializable {
 			
 			if (gr.getDEFAULTGAME() == 1)
 			{
+				PokerTableController.setRle(new Rule(strRuleName));
 				mi.setSelected(true);
 			}
-			name = mi.getText();
-			mi.setOnAction(new EventHandler<ActionEvent>() {
-				
-				public void handle(ActionEvent e) {
-					System.out.println(name + "toggled");
-					PokerTableController.setRle(new Rule(name));
-				}
-			});
+			mi.setOnAction(this::handleGameChange);
 			m.getItems().add(mi);
 		}
 
@@ -159,7 +156,22 @@ public class RootLayoutController implements Initializable {
 	 * 
 	 * @param mainApp
 	 */
+	public void handleGameChange(ActionEvent e){
+		RadioMenuItem mi = (RadioMenuItem) e.getSource();
+		currentRule = new Rule(mi.getText());
+		
+		
+		
+		for(Iterator it = mb.getMenus().get(0).getItems().iterator(); it.hasNext();){
+			RadioMenuItem rit = (RadioMenuItem) it;
+			if (rit.isSelected()) rit.setSelected(false);
+		};
+		mi.setSelected(true);
+		PokerTableController.setRle(currentRule);
+	}
+	
 	public void setMainApp(MainApp mainApp) {
+		
 		//Omaha.setToggleGroup(tglGames);
 		//Texas.setToggleGroup(tglGames);
 		//FCD.setToggleGroup(tglGames);
